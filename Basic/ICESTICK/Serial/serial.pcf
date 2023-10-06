@@ -1,9 +1,18 @@
-set_io resetq 3
-set_io pclk 21
-set_io led1 99
-set_io led2 98
-set_io led3 97
-set_io led4 96
-set_io led5 95
-set_io TXD 8
-set_io RXD 9
+
+# pin definitions
+
+#       654321      
+#	xxxxxx	PMOD2 A
+#	xxxxxx  PMOD2 B
+#       654321
+#
+#PMOD2 A 
+set_io i_clk C8 		#IOT_197 USER_CLK
+set_io o_ledg A9		#IOT_194 LED1
+#set_io o_ledg[1] B8		#IOT_203 LED2
+#set_io o_ledr    B7		#IOT_207 LED4
+
+set_io i_rts A1			#IOT_220 PM2-A1	i_rts
+set_io o_uart_tx B5 		#IOT_214 PM2-A3
+set_io i_uart_rx B3		#IOT_223 PM2-A2
+set_io o_cts B6			#IOT_208 PM2-A4	o_cts

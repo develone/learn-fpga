@@ -1,4 +1,4 @@
-
+`define VGA_36_MHZ
 `define BIDIRECTIONAL
 // Comment-out for monodirectional mode (saves 34 cells)
 //   Bidirectional: 155 cells
@@ -7,7 +7,7 @@
 // ---------------- Decoder 1 hex digit in ASCII -> 5 bits binary -----------
 module decoder (
     input  [7:0] data,
-    output [4:0] leds		
+    output [2:0] leds		
 );
 /*
    assign leds =
@@ -16,13 +16,44 @@ module decoder (
            8'h00
            ;
 */
-   assign leds = data[4:0];
+   assign leds = data[2:0];
 endmodule   
 
+module uartclock(
+   input  wire pclk,
+   output wire pixel_clk,
+   output wire lock
+);
+
+
+`ifdef VGA_36_MHZ
+  SB_PLL40_CORE #(
+      .FEEDBACK_PATH("SIMPLE"),
+	.DELAY_ADJUSTMENT_MODE_FEEDBACK("FIXED"),
+	.DELAY_ADJUSTMENT_MODE_RELATIVE("FIXED"),
+	.PLLOUT_SELECT("GENCLK"),
+	.FDA_FEEDBACK(4'b1111),
+	.FDA_RELATIVE(4'b1111),
+      .DIVR(4'b0011),
+      .DIVF(7'b0010110),
+      .DIVQ(3'b100),
+      .FILTER_RANGE(3'b010),
+  ) pll (
+      .REFERENCECLK(pclk),
+      .PLLOUTCORE(pixel_clk),
+      .LOCK(lock),
+      .RESETB(1'b1),
+      .BYPASS(1'b0)
+  );
+`endif
+
+
+endmodule
 // -------------------------- Main module -----------------------------------
 module serial (
     input  pclk,
-    output led1, led2, led3, led4, led5,
+    output LED1,  LED2,  LED3,	
+    //output led1, led2, led3, led4, led5,
     output TXD, 
     input  RXD,
     input  resetq	       
@@ -34,7 +65,7 @@ module serial (
   
   decoder _decoder0(
      .data(data),
-     .leds({ led1,led2,led3,led4,led5 })		     
+     .leds({ LED1,LED2,LED3})		     
   );
    
    
@@ -42,7 +73,7 @@ module serial (
   reg  uart0_wr;
   wire uart0_busy;
   buart _uart0 (
-     .clk(pclk),
+     .clk(pixel_clk),
      .resetq(1'b1),
      .rx(RXD),
      .tx(TXD),
@@ -54,7 +85,7 @@ module serial (
      .rx_data(uart0_data)
   );
   
-  always @(posedge pclk) begin
+  always @(posedge pixel_clk ) begin
      if(uart0_valid) begin
         data <= uart0_data;
 	uart0_wr <= 1; 
@@ -66,7 +97,7 @@ module serial (
 `else
 
   rxuart _uart0 (
-     .clk(pclk),
+     .clk(pixel_clk),
      .resetq(1'b1),
      .uart_rx(RXD),
      .rd(1'b1),
@@ -74,7 +105,7 @@ module serial (
      .data(uart0_data)
   );
 
-  always @(posedge pclk) begin
+  always @(posedge pixel_clk) begin
      if(uart0_valid) begin
         data <= uart0_data;
      end 

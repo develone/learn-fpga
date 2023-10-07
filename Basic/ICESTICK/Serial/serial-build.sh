@@ -14,4 +14,4 @@ nextpnr-ice40 --hx8k  --package ct256 --pcf-allow-unconstrained --pcf serial.pcf
 
 icepack serial.asc serial.bin
 
-icetime -d hx8k -c 100 serial.asc
+icetime -d hx8k -c 36 serial.asc

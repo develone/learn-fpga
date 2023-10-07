@@ -1,0 +1,6 @@
+devel@pi4-20:~/learn-fpga/Basic/ICESTICK/Serial $ iverilog -o dsn inverter.v inverter_tb.v 
+
+devel@pi4-20:~/learn-fpga/Basic/ICESTICK/Serial $ ./dsn
+
+devel@pi4-20:~/learn-fpga/Basic/ICESTICK/Serial $ gtkwave inverter.vcd
+
